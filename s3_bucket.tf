@@ -18,12 +18,6 @@ resource "aws_s3_bucket" "dynamodb_backup" {
   )
 }
 
-# Set the ACL for the S3 Bucket using aws_s3_bucket_acl resource
-resource "aws_s3_bucket_acl" "dynamodb_backup_acl" {
-  bucket = aws_s3_bucket.dynamodb_backup.id
-  acl    = "private"
-}
-
 # Enable versioning for the S3 Bucket
 resource "aws_s3_bucket_versioning" "dynamodb_backup_versioning" {
   bucket = aws_s3_bucket.dynamodb_backup.id
