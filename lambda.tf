@@ -18,4 +18,5 @@ resource "aws_lambda_function" "audit_trail_processor" {
       Name = var.lambda_function
     },
     var.tags 
+  )  
 }

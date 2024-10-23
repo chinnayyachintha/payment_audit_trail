@@ -14,9 +14,10 @@ resource "aws_dynamodb_table" "payment_audit_trail" {
     type = "S"
   }
 
-  tags = merge(
+tags = merge(
     {
       Name = var.dynamodb_table_name
     },
     var.tags 
+  )  
 }
