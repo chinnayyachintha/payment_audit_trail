@@ -167,3 +167,45 @@ This project implements a payment processing audit trail system using various AW
 
 ## Conclusion
 This project provides a scalable solution for processing payment audit trails using AWS services. Feel free to extend the functionality or modify the resources as per your requirements.
+
+----------------------------------------------------------------------------------
+# Payment Processing Flow
+
+## 1. Frontend: Collecting Payment Details
+The user interacts with a UI (User Interface) where they enter their payment details (e.g., credit card information). These details are collected and sent to your backend via an API.
+
+## 2. API Gateway
+The API Gateway serves as the entry point for the client requests. It receives the payment details from the frontend and forwards them to the Lambda function responsible for processing the data.
+
+## 3. Lambda Function for Encryption
+Upon receiving the payment details, the API Gateway triggers an AWS Lambda function.
+### Encryption Process:
+- This Lambda function utilizes AWS KMS (Key Management Service) to encrypt the sensitive payment details.
+- It generates a secure encrypted token, which ensures that sensitive information is protected.
+
+## 4. Storing Encrypted Data
+The encrypted token is then stored in an Amazon DynamoDB table. This step ensures that the sensitive data is stored securely and can be retrieved for future processing without exposing the original payment details.
+
+## 5. Triggering the Decrypt Function
+After storing the encrypted token, you may have another process that retrieves this entry from DynamoDB. This retrieval process triggers another Lambda function designed for decryption, enabling the system to process the payment.
+
+## 6. Lambda Function for Decryption
+This Lambda function takes the encrypted token from DynamoDB and uses AWS KMS to decrypt the payment details. Once decrypted, the original payment information can be processed securely.
+
+## 7. Interaction with Payment Processor
+After decryption, the payment details are sent to an external payment processor for transaction processing. The payment processor validates the payment information and processes the transaction.
+
+## 8. Recording Transaction Details
+After the payment processor returns a response (success or failure), you may store the transaction details (including status, transaction ID, etc.) in the same or another DynamoDB table for auditing and reporting purposes. This is crucial for maintaining a transaction log and ensuring compliance.
+
+## 9. User Notification
+Finally, based on the response from the payment processor, the user is notified about the transaction status through the frontend UI (success, failure, or any issues).
+
+## Summary of the Flow
+Frontend collects payment details → API Gateway forwards details → Lambda encrypts details using KMS → Encrypted token stored in DynamoDB → Trigger decryption Lambda → Decrypt payment details → Send to payment processor → Store transaction details → Notify user.
+
+## Key Points to Remember
+- **Security:** Using KMS for encryption and decryption ensures that sensitive data is handled securely.
+- **Asynchronous Processing:** Leveraging Lambda functions allows for handling tasks asynchronously and efficiently.
+- **Storage:** Storing data in DynamoDB ensures high availability and scalability for your application.
+"""
