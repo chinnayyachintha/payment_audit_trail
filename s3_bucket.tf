@@ -9,7 +9,6 @@ resource "random_id" "random_hex" {
 # S3 Bucket to store backups
 resource "aws_s3_bucket" "dynamodb_backup" {
   bucket = format("%s-backup-%s", replace(var.s3_bucket_name, "_", "-"), random_id.random_hex.hex) # Format bucket name with random suffix
-  acl    = "private"
 
   tags = merge(
     {
@@ -19,11 +18,16 @@ resource "aws_s3_bucket" "dynamodb_backup" {
   )
 }
 
+# Set the ACL for the S3 Bucket using aws_s3_bucket_acl resource
+resource "aws_s3_bucket_acl" "dynamodb_backup_acl" {
+  bucket = aws_s3_bucket.dynamodb_backup.id
+  acl    = "private"
+}
+
 # Enable versioning for the S3 Bucket
 resource "aws_s3_bucket_versioning" "dynamodb_backup_versioning" {
   bucket = aws_s3_bucket.dynamodb_backup.id
 
-  # This block is required to define versioning settings
   versioning_configuration {
     status = "Enabled" # Use "Enabled" to turn on versioning, "Suspended" to disable it
   }
