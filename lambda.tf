@@ -1,9 +1,9 @@
 resource "aws_lambda_function" "audit_trail_processor" {
-  filename         = "lambda/deployment.zip"
-  function_name    = "${var.lambda_function}"
-  role             = aws_iam_role.lambda_execution_role.arn
-  handler          = "lambda_function.lambda_handler"
-  runtime          = "python3.9"
+  filename      = "lambda/deployment.zip"
+  function_name = var.lambda_function
+  role          = aws_iam_role.lambda_execution_role.arn
+  handler       = "lambda_function.lambda_handler"
+  runtime       = "python3.9"
 
   environment {
     variables = {
@@ -17,6 +17,6 @@ resource "aws_lambda_function" "audit_trail_processor" {
     {
       Name = var.lambda_function
     },
-    var.tags 
-  )  
+    var.tags
+  )
 }

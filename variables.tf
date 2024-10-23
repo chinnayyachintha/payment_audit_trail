@@ -4,7 +4,7 @@ variable "aws_region" {
 }
 
 variable "dynamodb_table_name" {
-  type= string
+  type        = string
   description = "Name of the Dynamodb Table and S3 Bucket name"
 }
 
@@ -13,9 +13,19 @@ variable "iam_role" {
   description = "Specifying role name"
 }
 
+variable "s3_bucket_name" {
+  type        = string
+  description = "Specifying 3_bucket_name"
+}
+
 variable "lambda_function" {
-  type =string
+  type        = string
   description = "Name of the lambda function"
+}
+
+variable "sqs_queue" {
+  type        = string
+  description = "Name of the sqs_queue"
 }
 
 variable "tags" {

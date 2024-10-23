@@ -1,12 +1,12 @@
 resource "aws_cloudwatch_event_rule" "schedule_rule" {
-  name        = "dynamodb-backup-schedule"
-  description = "Scheduled rule to backup DynamoDB table"
+  name                = "dynamodb-backup-schedule"
+  description         = "Scheduled rule to backup DynamoDB table"
   schedule_expression = "rate(1 day)"
 }
 
 resource "aws_cloudwatch_event_target" "lambda_target" {
-  rule      = aws_cloudwatch_event_rule.schedule_rule.name
-  arn       = aws_lambda_function.audit_trail_processor.arn
+  rule = aws_cloudwatch_event_rule.schedule_rule.name
+  arn  = aws_lambda_function.audit_trail_processor.arn
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch" {

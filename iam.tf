@@ -1,5 +1,5 @@
 resource "aws_iam_role" "lambda_execution_role" {
-  name = "${var.iam_role}"
+  name = var.iam_role
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -16,29 +16,29 @@ resource "aws_iam_role" "lambda_execution_role" {
 }
 
 resource "aws_iam_policy" "lambda_policy" {
-  name   = "lambda_policy"
+  name = "lambda_policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "dynamodb:PutItem",
           "dynamodb:GetItem"
         ]
         Resource = aws_dynamodb_table.payment_audit_trail.arn
       },
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "s3:PutObject",
           "s3:GetObject"
         ]
         Resource = "${aws_s3_bucket.dynamodb_backup.arn}/*"
       },
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "sqs:SendMessage"
         ]
         Resource = aws_sqs_queue.audit_trail_queue.arn

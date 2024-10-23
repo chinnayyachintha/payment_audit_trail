@@ -9,7 +9,7 @@ iam_role = "lambda_execution_role_audit_logs"
 lambda_function = "audit_trail_processor"
 
 tags = {
-  Environment = "Development", 
-  Project     = "Payment Gateway",    
-  Owner       = "Anudeep"          
+  Environment = "Development",
+  Project     = "Payment Gateway",
+  Owner       = "Anudeep"
 }

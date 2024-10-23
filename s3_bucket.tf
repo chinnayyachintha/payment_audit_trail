@@ -24,7 +24,7 @@ resource "aws_s3_bucket_versioning" "dynamodb_backup_versioning" {
 
   # This block is required to define versioning settings
   versioning_configuration {
-    enabled = true  # Set to false if you want to disable versioning
+    enabled = true # Set to false if you want to disable versioning
   }
 }
 
