@@ -9,6 +9,7 @@ resource "random_id" "random_hex" {
 # S3 Bucket to store backups
 resource "aws_s3_bucket" "dynamodb_backup" {
   bucket = format("%s-backup-%s", replace(var.s3_bucket_name, "_", "-"), random_id.random_hex.hex) # Format bucket name with random suffix
+  acl    = "private"
 
   tags = merge(
     {
@@ -24,7 +25,7 @@ resource "aws_s3_bucket_versioning" "dynamodb_backup_versioning" {
 
   # This block is required to define versioning settings
   versioning_configuration {
-    enabled = true # Set to false if you want to disable versioning
+    status = "Enabled" # Use "Enabled" to turn on versioning, "Suspended" to disable it
   }
 }
 
@@ -39,32 +40,29 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "dynamodb_backup_e
   }
 }
 
-# Remove the block public access settings (allow public access)
+# Public access block settings for the S3 Bucket (disallow public access)
 resource "aws_s3_bucket_public_access_block" "dynamodb_backup_block" {
   bucket = aws_s3_bucket.dynamodb_backup.id
 
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
-# S3 Bucket Policy for allowing access (optional)
+# S3 Bucket Policy for allowing access (if needed)
 resource "aws_s3_bucket_policy" "dynamodb_backup_policy" {
-  bucket = aws_s3_bucket.dynamodb_backup.bucket
+  bucket = aws_s3_bucket.dynamodb_backup.id
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
         Effect    = "Allow",
-        Principal = "*",
+        Principal = {
+          "AWS" = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        },
         Action    = "s3:GetObject",
-        Resource  = "${aws_s3_bucket.dynamodb_backup.arn}/*",
-        Condition = {
-          StringEquals = {
-            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
-          }
-        }
+        Resource  = "${aws_s3_bucket.dynamodb_backup.arn}/*"
       }
     ]
   })
