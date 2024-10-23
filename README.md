@@ -82,3 +82,88 @@ The system logs the following details for each access event:
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
+
+
+--------------------------------------------------------------------------------
+# Payment Processing Audit Trail
+
+## Overview
+
+This project implements a payment processing audit trail system using various AWS services. The primary goal is to asynchronously process payment messages and store relevant information in a DynamoDB table for future reporting and retrieval.
+
+## AWS Resources
+
+### 1. DynamoDB Table
+- **Purpose**: To store payment audit trail data, including payment information.
+- **Key Attributes**:
+  - `paymentId` (Partition Key): Unique identifier for each payment.
+  - `amount`: The amount of the payment.
+  - `timestamp`: The time at which the payment was processed.
+
+### 2. SQS Queue
+- **Purpose**: To handle the asynchronous processing of payment messages.
+- **Configuration**: The SQS queue is set up to trigger the AWS Lambda function whenever a new message is available.
+
+### 3. AWS Lambda Function
+- **Purpose**: To process incoming messages from the SQS queue and log the payment data into the DynamoDB table.
+- **Configuration**:
+  - **Runtime**: Python 3.9.
+  - **Handler**: The main entry point for the Lambda function is defined in the script.
+  - **Environment Variables**: The name of the DynamoDB table is passed as an environment variable.
+
+### 4. IAM Role for Lambda Execution
+- **Purpose**: To grant the Lambda function the necessary permissions to access AWS resources.
+- **Permissions**:
+  - `dynamodb:PutItem` on the DynamoDB table.
+  - `sqs:ReceiveMessage`, `sqs:DeleteMessage`, and `sqs:GetQueueAttributes` on the SQS queue.
+- **Trust Relationship**: The role trusts the Lambda service to assume it.
+
+### 5. CloudWatch Logs
+- **Purpose**: For logging and monitoring Lambda function executions. This enables tracking of successful operations and error handling.
+- **Configuration**: CloudWatch logging is automatically enabled for Lambda functions. Ensure logging is implemented within the function to capture important events.
+
+### 6. (Optional) S3 Bucket
+- **Purpose**: To back up data or store relevant files if necessary.
+- **Configuration**: Set up the S3 bucket for storing backup data or files and provide access permissions for the Lambda function.
+
+## Resource Flow
+
+1. **SQS Queue**: Receives payment messages.
+2. **AWS Lambda**: Triggered by new messages in the SQS queue, processes the data, and logs it into the DynamoDB table.
+3. **DynamoDB**: Stores the payment audit trails for future retrieval and reporting.
+
+## Setup Instructions
+
+### Prerequisites
+- AWS Account
+- AWS CLI configured with appropriate permissions
+- Terraform installed (if using Terraform for resource management)
+
+### Deployment Steps
+
+1. **Create DynamoDB Table**:
+   - Use the AWS Management Console or Terraform to create a table named `payment-audit-trail`.
+
+2. **Create SQS Queue**:
+   - Create an SQS queue named `audit-trail-queue` using the AWS Management Console or Terraform.
+
+3. **Create IAM Role**:
+   - Create an IAM role for Lambda execution with the necessary permissions to access DynamoDB and SQS.
+
+4. **Deploy Lambda Function**:
+   - Write the Lambda function code (as provided in the project) and package it into a ZIP file.
+   - Create a Lambda function in AWS and link it to the SQS queue as a trigger.
+
+5. **Set Up CloudWatch Logs**:
+   - Ensure CloudWatch logging is enabled for the Lambda function.
+
+6. **(Optional) Create S3 Bucket**:
+   - If needed, create an S3 bucket to store backups or other relevant data.
+
+## Testing
+- Send a test message to the SQS queue with the expected payment data format.
+- Monitor the Lambda function execution in CloudWatch logs to ensure successful processing.
+- Check the DynamoDB table to verify that the payment data has been logged correctly.
+
+## Conclusion
+This project provides a scalable solution for processing payment audit trails using AWS services. Feel free to extend the functionality or modify the resources as per your requirements.
